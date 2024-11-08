@@ -8,6 +8,32 @@ config.frame_width = 7.875
 class SupervisedLearning(Scene):
     def construct(self):
 
+        main_title = Text("Como as máquinas aprendem com dados?", font_size=32, color="#00ACE2")
+
+        # Posiciona a primeira linha
+        main_title.scale(0.8)
+        main_title.move_to(UP)
+        self.play(Write(main_title))
+        self.wait(1)
+                
+        learning_types = BulletedList(
+            "Aprendizado Supervisionado", 
+            "Aprendizado Não Supervisionado", 
+            font_size=30
+        )
+
+        learning_types.next_to(main_title, DOWN, buff=1)
+        self.play(FadeIn(learning_types))
+        self.wait(2)
+        # Destaque na palavra "Aprendizado Supervisionado"
+        self.play(learning_types[0].animate.scale(1.2).set_color(YELLOW))
+        self.wait(2)
+
+        self.play(FadeOut(main_title, learning_types))
+
+        # Manter a cena por um tempo
+        self.wait(2)
+
         # Criar um retângulo azul
         square = Rectangle(width=1.25, height=1.25, color="#00ACE2", fill_opacity=0.5)
         self.play(Create(square))
@@ -18,7 +44,7 @@ class SupervisedLearning(Scene):
 
         # Adicionar animação de entrada do ai_label
         self.play(Write(ai_label))
-        self.wait(0.5)
+        self.wait(2)
 
         input_arrow = Arrow(start=LEFT * 2.5, end=square.get_left(), color=WHITE)  # Início à esquerda do retângulo
         input_label = Text("Entrada", font_size=24, color=WHITE).next_to(input_arrow, LEFT, buff=0.15)
@@ -31,39 +57,12 @@ class SupervisedLearning(Scene):
 
         # Adicionar animações
         self.play(Create(input_arrow), Write(input_label))
+        self.wait(2)
         self.play(Create(output_arrow), Write(output_label))
+        self.wait(2)
 
         self.play(FadeOut(square, ai_label, input_arrow, input_label, output_arrow, output_label))
-        self.wait(1)
-
-
-        main_title = Text("Como as Máquinas Aprendem com Dados?", font_size=32, color="#00ACE2")
-
-        # Posiciona a primeira linha
-        main_title.scale(0.8)
-        main_title.move_to(UP)
-        self.play(Write(main_title))
-        self.wait(1)
-                
-        learning_types = BulletedList(
-            "Supervisionado", 
-            "Não Supervisionado", 
-            "Reforço", 
-            "Semi-Supervisionado",
-            font_size=30
-        )
-
-        learning_types.next_to(main_title, DOWN, buff=1)
-        self.play(FadeIn(learning_types))
-        self.wait(1)
-        # Destaque na palavra "Supervisionado"
-        self.play(learning_types[0].animate.scale(1.2).set_color(YELLOW))
-        self.wait(2)
-
-        self.play(FadeOut(main_title, learning_types))
-
-        # Manter a cena por um tempo
-        self.wait(2)
+        self.wait(3)
 
        # Tabela de dados
         data_table = MathTable(
@@ -77,14 +76,14 @@ class SupervisedLearning(Scene):
         data_table.scale(0.5).shift(UP)
         self.play(Write(data_table))
 
-        self.wait(2)
+        self.wait(1)
 
 
         # Destacando a coluna "Col2" alterando a cor de fundo das células
         for cell in data_table.get_columns()[-1]:
             cell.set_fill(YELLOW, opacity=0.8)
 
-        self.wait(3)
+        self.wait(1)
 
         # Adicionando espaçamento entre a tabela e o retângulo
         self.play(data_table.animate.shift(UP * 1.5))  # Movendo a tabela para cima
@@ -99,29 +98,45 @@ class SupervisedLearning(Scene):
         # Animação da tabela entrando na caixa de IA
         self.play(
             data_table.animate.move_to(model_box.get_center()).scale(0.1),  # Move e reduz o tamanho
-            run_time=2  # Duração da animação
+            run_time=1  # Duração da animação
         )
 
         self.play(
             model_box.animate.scale(1.5),  # Aumenta o tamanho do modelo
-            run_time=2  # Define o tempo da animação
+            run_time=1  # Define o tempo da animação
         )
 
 
-        # # Simulação de uma nova previsão
-        # new_data = MathTable([["120", "4", "Bairro Residencial"]], include_outer_lines=True)
-        # new_data.scale(0.6).next_to(model_box, DOWN, buff=1)
-        # predicted_price = Text("R$ 700.000", font_size=24).next_to(new_data, RIGHT)
+        # Simulação de uma nova previsão
+        new_data = MathTable([
+            ["Tamanho (m^2)", "Quartos", "Localizacao"],
+            ["100", "3", "Asa Sul"]], include_outer_lines=True)
+        new_data.scale(0.8).next_to(model_box, UP, buff=2.5)
+        self.wait(2)
 
-        # # Adiciona a nova previsão ao modelo
-        # self.play(Write(new_data))
-        # self.play(Create(predicted_price))
-        # self.wait(2)
+        self.play(
+            new_data.animate.move_to(model_box.get_center()).scale(0.0001),  # Move e reduz o tamanho
+            run_time=2  # Duração da animação
+        )
 
-        # # Resumo e transição para o próximo conceito
-        # summary_text = Text("O modelo aprendeu a prever preços de imóveis", font_size=24, color=YELLOW).to_edge(DOWN)
-        # self.play(Write(summary_text))
-        # self.wait(3)
+        predicted_price = MathTable([["756.400"]], color=YELLOW).move_to(model_box.get_center())
 
-        # # Limpar a tela para o próximo conceito
-        # self.play(FadeOut(summary_text, title, data_table, model_box, model_label, training_arrow, new_data, predicted_price))
+        predicted_price.set_z_index(-1) # Define o valor atrás do model_box
+        
+        # Ajusta para sair do modelo
+        self.play(Write(predicted_price))
+        self.play(predicted_price.animate.shift(DOWN * 3), run_time=2, color=YELLOW)  # Move para baixo para dar a ideia de que está "saindo" do modelo
+        self.wait(1.5)
+
+        self.play(FadeOut(model_box, model_label, data_table, new_data, predicted_price))
+
+        image = ImageMobject("types_of_learning/supervised/assets/images/cis_logo.png")
+
+        # Defina a posição da imagem (opcional)
+        image.move_to(ORIGIN)  # Centraliza a imagem na tela
+
+        # Adicione a imagem à cena
+        self.play(FadeIn(image))
+
+        # Exiba a cena por 3 segundos
+        self.wait(3)
